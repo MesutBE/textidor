@@ -11,13 +11,13 @@ const config = require('./config');
 // - setup -
 const FILES_DIR = __dirname + '/text-files';
 // create the express app
-_;
+const app = express();
 
 // - use middleware -
 // allow Cross Origin Resource Sharing
 app.use(cors());
 // parse the body
-_;
+app.use(bodyParser.json());
 
 // https://github.com/expressjs/morgan#write-logs-to-a-file
 const accessLogStream = fs.createWriteStream(
@@ -29,16 +29,20 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(morgan('dev'));
 
 // statically serve the frontend
-_;
+app.use(express.static('public')); // in this way we can serve our index.html and the other files as front-end
+
+// to complete the project we need to see 
+// demo.min.js app's logs by inspecting 
+// the page and look at network requests
 
 // - declare routes -
 
 // read all file names
-app._('_', (req, res, next) => {
-  fs._(FILES_DIR, (err, list) => {
-    if (_) {
+app.get('/files', (req, res, next) => {
+  fs.readdir(FILES_DIR, 'utf-8', (err, list) => {
+    if (!list) {
       res.status(404).end();
-      _;
+      return;
     }
     if (err) {
       // https://expressjs.com/en/guide/error-handling.html
@@ -51,16 +55,16 @@ app._('_', (req, res, next) => {
 });
 
 // read a file
-app._('_', (req, res, next) => {
+app.get('/files/:name', (req, res, next) => {
   const fileName = req.params.name;
-  fs._(`${FILES_DIR}/${fileName}`, _, (err, fileText) => {
-    if (_) {
-      _;
+  fs.readFile(`${FILES_DIR}/${fileName}`, 'utf-8', (err, fileText) => {
+    if (!list) {
+      res.status(404).end();
       return;
     }
-    if (_) {
-      _;
-      _;
+    if (err) {
+      next(err);
+      return;
     }
 
     const responseData = {
@@ -72,31 +76,36 @@ app._('_', (req, res, next) => {
 });
 
 // write a file
-app._('_', (req, res, next) => {
-  const fileName = _;
-  const fileText = _;
-  fs._(`${FILES_DIR}/${fileName}`, _, err => {
-    if (_) {
-      _;
-      _;
-    }
+app.post('/files/:value', (req, res, next) => {
+  const fileName = req.params.value;
+  const fileText = req.body.text; // see action.js saveFile method fileText is sent in body..
+  // console.log(fileName);
+  // console.log(fileText);
 
+
+  fs.writeFile(`${FILES_DIR}/${fileName}`, fileText, err => {
+    if (err) {
+      next(err);
+      return;
+    }
     // https://stackoverflow.com/questions/33214717/why-post-redirects-to-get-and-put-redirects-to-put
     res.redirect(303, '/files');
   });
 });
 
 // delete a file
-app._('_', (req, res, next) => {
-  const fileName = _;
-  fs._(`${FILES_DIR}/${fileName}`, err => {
+app.delete('/files/:writesomething', (req, res, next) => {
+  const fileName = req.params.writesomething;
+  
+  fs.unlink(`${FILES_DIR}/${fileName}`, err => {
     if (err && err.code === 'ENOENT') {
-      _;
-      _;
+      // if file doesn't exist
+      next(err);
+      return;
     }
-    if (_) {
-      _;
-      _;
+    if (err) {
+      next(err);
+      return;
     }
 
     res.redirect(303, '/files');
@@ -113,4 +122,9 @@ app.use(function(err, req, res, next) {
 
 // - open server -
 // try to exactly match the message logged by demo.min.js
-_;
+app.listen(
+  config.PORT,
+  () => {
+    console.log(`simple editor: running on port ${config.PORT} (${config.MODE} mode)`);
+  }
+);

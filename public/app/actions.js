@@ -12,7 +12,7 @@ const fetchAndLoadFile = fileName =>
 const saveFile = (fileName, fileText) => {
   fetch('/files/' + fileName, {
     method: 'POST',
-    body: JSON.stringify({ text: fileText }),
+    body: JSON.stringify({ text: fileText }), // fileText is sending by body
     headers: {
       'Content-type': 'application/json; charset=UTF-8',
     },

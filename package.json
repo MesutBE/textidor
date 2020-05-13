@@ -1,14 +1,14 @@
 {
   "name": "wk-2-basic-editor",
   "version": "1.0.0",
-  "description": "",
+  "description": "This fun little project is a fullstack text editor. From the frontend a user can:",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "author": "",
+  "author": "mesutBE",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -18,5 +18,13 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MesutBE/textidor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MesutBE/textidor/issues"
+  },
+  "homepage": "https://github.com/MesutBE/textidor#readme"
 }
